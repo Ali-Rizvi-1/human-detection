@@ -7,6 +7,7 @@ import rospy
 import cv2
 from std_msgs.msg import String
 from sensor_msgs.msg import Image
+from std_msgs.msg import Float64MultiArray
 from cv_bridge import CvBridge, CvBridgeError
 import numpy as np
 import time
@@ -17,34 +18,51 @@ count = [0,0]
 # ppi = # pixels per inch  
 radial = 0.0
 theta = 0.0
+msg = [0.0, 0.0]
+
 class image_converter:
   def __init__(self):
     self.image_pub = rospy.Publisher("image_topic_3",Image)
 
     self.bridge = CvBridge()
 
+    self.image_center = rospy.Subscriber("/centeroid", Float64MultiArray, self.callback2)
+    
     self.image_sub = rospy.Subscriber("/camera/depth_aligned_to_color_and_infra1/image_raw",Image,self.callback)
+    
+  def callback2(self,data):
+    # try:
+    #   cv_image = self.bridge.imgmsg_to_cv2(data, "passthrough")
+    # except CvBridgeError as e:
+    #   print(e)
+    msg[0] =data.data[0]
+    msg[1] =data.data[1]
+
+    # print(msg)
+
 
   def callback(self,data):
     try:
       cv_image = self.bridge.imgmsg_to_cv2(data, "passthrough")
     except CvBridgeError as e:
       print(e)
-    
+    # msg = self.image_center.data
+    print(msg)
     #####################         CODE STARTS          ##########################
 
     # R and C recieved from human detection node, add subcriber above
-    r = 150
-    c = 330
+    r = int(msg[1])
+    c = int(msg[0])
  
     (rows,cols) = cv_image.shape
     #create numpy list of image for simplicity
     lst = []
     for i in range(0,rows-1):
-        tlst = []
-	for j in range(0,cols-1):
-           tlst.append(cv_image[i,j])
-        lst.append(tlst)
+      tlst = []
+      for j in range(0,cols-1):
+        tlst.append(cv_image[i,j])
+      lst.append(tlst)
+
     lst = np.array(lst)
     # Gray image is only for visualization, for all purposes,
     # use lst to get depth values from image

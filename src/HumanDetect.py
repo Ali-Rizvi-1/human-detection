@@ -14,8 +14,8 @@ from cv_bridge import CvBridge, CvBridgeError
 class image_converter:
 
   def __init__(self):
-    self.image_pub = rospy.Publisher("image_topic_2",Image)
-    # self.puber = rospy.Publisher('centeroid', Float64MultiArray)
+    # self.image_pub = rospy.Publisher("image_topic_2",Image)
+    self.puber = rospy.Publisher('centeroid', Float64MultiArray)
     
     self.bridge = CvBridge()
     self.image_sub = rospy.Subscriber("/camera/color/image_raw",Image,self.callback)
@@ -40,6 +40,7 @@ class image_converter:
 
     bounding_box_cordinates, weights =  HOGCV.detectMultiScale(cv_image, winStride = (4, 4), padding = (8, 8), scale = 1.03)
     # msg_list = int_array2d()
+    data_to_send = Float64MultiArray()
     centeroid = []
     person = 1
     for x,y,w,h in bounding_box_cordinates:
@@ -48,9 +49,11 @@ class image_converter:
         centeroid_x = x+w/2
         centeroid_y = y+h/2
         # cv2.circle(frame,(centeroid_x, centeroid_y), 25, (0,255,0))
-        centeroid.append([centeroid_x,centeroid_y])
+        centeroid.append(centeroid_x) #[centeroid_x,centeroid_y]
+        centeroid.append(centeroid_y)
         person += 1
     
+    data_to_send.data = centeroid
     cv2.putText(cv_image, 'Status : Detecting ', (40,40), cv2.FONT_HERSHEY_DUPLEX, 0.8, (255,0,0), 2)
     # cv2.putText(cv_image, f'Total Persons : {person-1}', (40,70), cv2.FONT_HERSHEY_DUPLEX, 0.8, (255,0,0), 2)
     cv2.imshow("Image window",cv_image)
@@ -60,13 +63,13 @@ class image_converter:
 
     # print(centeroid)
     # cv2.imshow("Image window", cv_image)
-    cv2.waitKey(3)
+    # cv2.waitKey(3)
 
     # self.puber.publish(centeroid)
 
     try:
-      # self.puber.publish(centeroid)
-      self.image_pub.publish(self.bridge.cv2_to_imgmsg(newimage, "bgr8"))
+      self.puber.publish(data_to_send)
+      # self.image_pub.publish(self.bridge.cv2_to_imgmsg(newimage, "bgr8"))
     except CvBridgeError as e:
       print(e)
 
