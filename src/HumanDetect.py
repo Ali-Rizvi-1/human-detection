@@ -48,13 +48,13 @@ class image_converter:
         # cv2.putText(cv_image, f'person {person}', (x,y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,255), 1)
         centeroid_x = x+w/2
         centeroid_y = y+h/2
-        # cv2.circle(frame,(centeroid_x, centeroid_y), 25, (0,255,0))
+        cv2.circle(cv_image,(centeroid_x, centeroid_y), 5, (0,255,0))
         centeroid.append(centeroid_x) #[centeroid_x,centeroid_y]
         centeroid.append(centeroid_y)
         person += 1
     
     data_to_send.data = centeroid
-    # cv2.circle(cv_image,(centeroid_x, centeroid_y), 25, (0,255,0))
+    # cv2.circle(cv_image,(centeroid_x, centeroid_y), 5, (0,255,0))
     cv2.putText(cv_image, 'Status : Detecting ', (40,40), cv2.FONT_HERSHEY_DUPLEX, 0.8, (255,0,0), 2)
     # cv2.putText(cv_image, f'Total Persons : {person-1}', (40,70), cv2.FONT_HERSHEY_DUPLEX, 0.8, (255,0,0), 2)
     cv2.imshow("Image window",cv_image)
