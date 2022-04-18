@@ -36,6 +36,9 @@ class image_converter:
     HOGCV = cv2.HOGDescriptor()
     HOGCV.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
     
+    # rgb to grayscale
+    cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2GRAY)
+
     # detectByPathImage(path)
 
     bounding_box_cordinates, weights =  HOGCV.detectMultiScale(cv_image, winStride = (4, 4), padding = (8, 8), scale = 1.03)

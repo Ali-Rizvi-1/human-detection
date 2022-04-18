@@ -40,7 +40,7 @@ class image_converter:
     #self.drone_pose = rospy.Subscriber("/mavros/global_position/local", Odometry, self.callback3)
     self.drone_pose = rospy.Subscriber("/gazebo/model_states", ModelStates, self.callback3)
 
-    self.drone_slam_pose = rospy.Subscriber("/rtabmap/odom", Odometry, self.callback4)
+   # self.drone_slam_pose = rospy.Subscriber("/rtabmap/odom", Odometry, self.callback4)
 
   # def callback4(self, data): # poses from SLAM
 
@@ -51,7 +51,7 @@ class image_converter:
     q1 = data.pose.pose.orientation.x
     q2 = data.pose.pose.orientation.y
     q3 = data.pose.pose.orientation.z
-    x1 = data.pose.pose.position.y
+    x1 = data.pose.pose.position.y*-1
     y1 = data.pose.pose.position.x
     z1 = data.pose.pose.position.z
     drone_slam_pose = open(r"/home/ali/catkin_ws/src/human-detection/src/drone_slam_pose.txt", "a")
@@ -188,8 +188,8 @@ class image_converter:
     for k in range(len(msg)/2):
      
       if (k%2.0 )== 0.0:
-        a = 0.0
-        b = 0.0
+        a = 10000000.0
+        b = 10000000.0
         r = int(msg[k+1])
         c = int(msg[k])
  
@@ -242,7 +242,7 @@ class image_converter:
        
         print("x = ", z/1000.0, "and y = ", x/1000.0, "and z = ", y/1000.0)
       if a not in coord:
-        if a != 0.0 and b != 0.0: # and c != 0.0
+        if a != 10000000.0 and b != 10000000.0: # and c != 0.0
           coord.append(a)
           coord.append(b)
           # coord.append(c)
